@@ -44,12 +44,12 @@ struct MusicPlayerView: View {
                 
                 Slider(
                     value: $currentTime,
-                    in: 0...(totalTime > 0 ? totalTime : 1),  // totalTimeが0の場合は1を使用
+                    in: 0...(totalTime > 0 ? totalTime : 1),
                     step: 1
                 )
                 .accentColor(.black.opacity(0.5))
                 .padding(.horizontal)
-                .disabled(totalTime <= 0)  // totalTimeが0以下の場合はSliderを無効化
+                .disabled(totalTime <= 0)
                 
                 HStack {
                     Text(formatTime(currentTime))
@@ -144,9 +144,13 @@ struct MusicPlayerView: View {
         }
         .sheet(isPresented: $showPlaylistPicker) {
             PlaylistPickerView(playlistManager: playlistManager) { selectedPlaylist in
+                handleStopAudio() // 新しいプレイリストをロードする前に現在の音楽を停止
                 playlistManager.loadPlaylist(selectedPlaylist)
                 currentSongIndex = 0
                 setupAudioPlayer()
+                if isPlaying {
+                    audioPlayer?.play() // 以前再生中だった場合、新しいプレイリストの再生を開始
+                }
             }
         }
         .onAppear {
@@ -169,6 +173,8 @@ struct MusicPlayerView: View {
     }
     
     private func setupAudioPlayer() {
+        handleStopAudio() // 新しい音楽をセットアップする前に既存の音楽を停止
+        
         guard let currentSong = getCurrentSong(),
               let assetURL = currentSong.assetURL else {
             print("Error: Song file not found")
@@ -179,6 +185,7 @@ struct MusicPlayerView: View {
             audioPlayer = try AVAudioPlayer(contentsOf: assetURL)
             audioPlayer?.prepareToPlay()
             totalTime = audioPlayer?.duration ?? 0
+            currentTime = 0 // 新しい音楽プレーヤーをセットアップする際に現在の時間をリセット
         } catch {
             print("Error loading audio file: \(error)")
         }
@@ -230,5 +237,10 @@ struct MusicPlayerView: View {
     private func handleStopAudio() {
         audioPlayer?.stop()
         audioPlayer = nil
+        isPlaying = false
+        currentTime = 0
+        totalTime = 0
+        timer?.invalidate()
+        timer = nil
     }
 }
