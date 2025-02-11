@@ -186,6 +186,9 @@ struct MusicPlayerView: View {
                         .transition(.move(edge: .leading))
                         .animation(.easeInOut, value: viewModel.currentSongIndex)
                         .padding([.top, .bottom])
+                } else {
+                    CarouselCardView(currentSong: nil)
+                        .padding([.top, .bottom])
                 }
                 
                 Slider(
@@ -200,7 +203,7 @@ struct MusicPlayerView: View {
                 }
                 .accentColor(.black.opacity(0.5))
                 .padding(.horizontal)
-                .disabled(viewModel.totalTime <= 0)
+                .disabled(viewModel.getCurrentSong() == nil || viewModel.totalTime <= 0)
                 
                 HStack {
                     Text(viewModel.formatTime(viewModel.currentTime))
@@ -222,6 +225,7 @@ struct MusicPlayerView: View {
                             .foregroundColor(.white)
                             .padding()
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
                     
                     Button(action: viewModel.handlePreviousSong) {
                         Image(systemName: "backward.fill")
@@ -229,6 +233,7 @@ struct MusicPlayerView: View {
                             .foregroundColor(.white)
                             .padding()
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
                     
                     Button(action: viewModel.handlePlayPause) {
                         ZStack {
@@ -242,6 +247,7 @@ struct MusicPlayerView: View {
                                 .padding()
                         }
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
                     
                     Button(action: viewModel.handleNextSong) {
                         Image(systemName: "forward.fill")
@@ -249,6 +255,7 @@ struct MusicPlayerView: View {
                             .foregroundColor(.white)
                             .padding()
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
                     
                     Button(action: viewModel.handleSkipForward) {
                         Image(systemName: "15.arrow.trianglehead.clockwise")
@@ -256,6 +263,7 @@ struct MusicPlayerView: View {
                             .foregroundColor(.white)
                             .padding()
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
                 }
                 .padding(.top, 30)
                 
@@ -266,21 +274,30 @@ struct MusicPlayerView: View {
                             .foregroundColor(.white)
                             .imageScale(.large)
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
+                    
                     Spacer()
+                    
                     Button(action: {}) {
                         Image(systemName: "repeat")
                             .font(.title2)
                             .foregroundColor(.white)
                             .imageScale(.large)
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
+                    
                     Spacer()
+                    
                     Button(action: {}) {
                         Image(systemName: "shuffle")
                             .font(.title2)
                             .foregroundColor(.white)
                             .imageScale(.large)
                     }
+                    .disabled(viewModel.getCurrentSong() == nil)
+                    
                     Spacer()
+                    
                     Button(action: { showPlaylistPicker = true }) {
                         Image(systemName: "text.badge.plus")
                             .font(.title2)
