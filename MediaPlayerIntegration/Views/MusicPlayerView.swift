@@ -11,6 +11,7 @@ struct MusicPlayerView: View {
     @State private var timer: Timer?
     @State private var currentSongIndex: Int = 0
     @State private var showPlaylistPicker = false
+    @State private var isSeeking: Bool = false
     
     var body: some View {
         ZStack {
@@ -46,7 +47,12 @@ struct MusicPlayerView: View {
                     value: $currentTime,
                     in: 0...(totalTime > 0 ? totalTime : 1),
                     step: 1
-                )
+                ) { editing in
+                    isSeeking = editing
+                    if !editing {
+                        seekAudio(to: currentTime)
+                    }
+                }
                 .accentColor(.black.opacity(0.5))
                 .padding(.horizontal)
                 .disabled(totalTime <= 0)
@@ -144,12 +150,20 @@ struct MusicPlayerView: View {
         }
         .sheet(isPresented: $showPlaylistPicker) {
             PlaylistPickerView(playlistManager: playlistManager) { selectedPlaylist in
-                handleStopAudio() // 新しいプレイリストをロードする前に現在の音楽を停止
-                playlistManager.loadPlaylist(selectedPlaylist)
-                currentSongIndex = 0
-                setupAudioPlayer()
-                if isPlaying {
-                    audioPlayer?.play() // 以前再生中だった場合、新しいプレイリストの再生を開始
+                let wasPlaying = isPlaying
+                let currentPlaylistId = playlistManager.currentPlaylistId
+                
+                if currentPlaylistId != selectedPlaylist.persistentID {
+                    handleStopAudio()
+                    playlistManager.loadPlaylist(selectedPlaylist)
+                    currentSongIndex = 0
+                    setupAudioPlayer()
+                    if wasPlaying {
+                        audioPlayer?.play()
+                        isPlaying = true
+                    }
+                } else {
+                    print("同じプレイリストが選択されました。再生を継続します。")
                 }
             }
         }
@@ -173,7 +187,7 @@ struct MusicPlayerView: View {
     }
     
     private func setupAudioPlayer() {
-        handleStopAudio() // 新しい音楽をセットアップする前に既存の音楽を停止
+        handleStopAudio()
         
         guard let currentSong = getCurrentSong(),
               let assetURL = currentSong.assetURL else {
@@ -185,9 +199,26 @@ struct MusicPlayerView: View {
             audioPlayer = try AVAudioPlayer(contentsOf: assetURL)
             audioPlayer?.prepareToPlay()
             totalTime = audioPlayer?.duration ?? 0
-            currentTime = 0 // 新しい音楽プレーヤーをセットアップする際に現在の時間をリセット
+            currentTime = 0
+            startTimer()
         } catch {
             print("Error loading audio file: \(error)")
+        }
+    }
+    
+    private func startTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            if let player = audioPlayer, !isSeeking {
+                currentTime = player.currentTime
+            }
+        }
+    }
+    
+    private func seekAudio(to time: Double) {
+        audioPlayer?.currentTime = time
+        if isPlaying {
+            audioPlayer?.play()
         }
     }
     
@@ -196,6 +227,7 @@ struct MusicPlayerView: View {
             audioPlayer?.pause()
         } else {
             audioPlayer?.play()
+            startTimer()
         }
         isPlaying.toggle()
     }

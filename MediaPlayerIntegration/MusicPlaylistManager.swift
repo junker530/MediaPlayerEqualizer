@@ -13,6 +13,7 @@ class MusicPlaylistManager: ObservableObject {
     @Published var playlists: [MPMediaPlaylist] = []
     @Published var currentPlaylist: [MusicItem] = []
     @Published var authorizationStatus: MPMediaLibraryAuthorizationStatus = .notDetermined
+    @Published var currentPlaylistId: MPMediaEntityPersistentID? = nil
     
     init() {
         checkAuthorization()
@@ -46,6 +47,7 @@ class MusicPlaylistManager: ObservableObject {
     }
     
     func loadPlaylist(_ playlist: MPMediaPlaylist) {
+        currentPlaylistId = playlist.persistentID
         currentPlaylist = playlist.items.map { item in
             MusicItem(
                 id: item.persistentID.description,
