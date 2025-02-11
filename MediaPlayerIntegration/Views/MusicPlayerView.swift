@@ -98,9 +98,7 @@ class MusicPlayerViewModel: ObservableObject {
         currentSongIndex = (currentSongIndex + 1) % playlistManager.currentPlaylist.count
         handleStopAudio()
         setupAudioPlayer()
-        if isPlaying {
-            audioPlayer?.play()
-        }
+        playCurrentSong()
     }
     
     func handlePreviousSong() {
@@ -108,9 +106,7 @@ class MusicPlayerViewModel: ObservableObject {
         currentSongIndex = (currentSongIndex - 1 + playlistManager.currentPlaylist.count) % playlistManager.currentPlaylist.count
         handleStopAudio()
         setupAudioPlayer()
-        if isPlaying {
-            audioPlayer?.play()
-        }
+        playCurrentSong()
     }
     
     func handleStopAudio() {
@@ -121,6 +117,12 @@ class MusicPlayerViewModel: ObservableObject {
         totalTime = 0
         timer?.invalidate()
         timer = nil
+    }
+    
+    private func playCurrentSong() {
+        audioPlayer?.play()
+        isPlaying = true
+        startTimer()
     }
 }
 

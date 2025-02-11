@@ -7,6 +7,14 @@ struct MusicItem: Identifiable, Equatable {
     let title: String
     let artist: String
     let artwork: MPMediaItemArtwork?
+    
+    init(from mediaItem: MPMediaItem) {
+        self.id = mediaItem.persistentID.description
+        self.assetURL = mediaItem.assetURL
+        self.title = mediaItem.title ?? "Unknown Title"
+        self.artist = mediaItem.artist ?? "Unknown Artist"
+        self.artwork = mediaItem.artwork
+    }
 }
 
 class MusicPlaylistManager: ObservableObject {
@@ -48,14 +56,6 @@ class MusicPlaylistManager: ObservableObject {
     
     func loadPlaylist(_ playlist: MPMediaPlaylist) {
         currentPlaylistId = playlist.persistentID
-        currentPlaylist = playlist.items.map { item in
-            MusicItem(
-                id: item.persistentID.description,
-                assetURL: item.assetURL,
-                title: item.title ?? "Unknown",
-                artist: item.artist ?? "Unknown",
-                artwork: item.artwork
-            )
-        }
+        currentPlaylist = playlist.items.map { MusicItem(from: $0) }
     }
 }
