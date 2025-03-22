@@ -56,6 +56,7 @@ class MusicPlayerViewModel: ObservableObject {
             } else {
                 try musicPlayManager.prepare(currentSong)
             }
+
             
             startTimer()
         } catch {
@@ -116,8 +117,10 @@ class MusicPlayerViewModel: ObservableObject {
         guard !playlistManager.currentPlaylist.isEmpty else { return }
         currentSongIndex = (currentSongIndex + 1) % playlistManager.currentPlaylist.count
         handleStopAudio()
-        setupAudioPlayer(useCompletionHandler: false)
+        setupAudioPlayer(useCompletionHandler: false)  // ← completionHandlerなし
+        playCurrentSong()
     }
+
     
     func handlePreviousSong() {
         guard !playlistManager.currentPlaylist.isEmpty else { return }
