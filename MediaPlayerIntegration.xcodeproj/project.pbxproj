@@ -16,10 +16,10 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		59A8CAA22D5B3AF60090E955 /* Exceptions for "MediaPlayerIntegration" folder in "MediaPlayerIntegration" target */ = {
+		59CE188A2D8E61350059AA4C /* Exceptions for "MediaPlayerIntegration" folder in "MediaPlayerIntegration" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Views/Info.plist,
+				Info.plist,
 			);
 			target = BB09C5DA2CE2102400E23E65 /* MediaPlayerIntegration */;
 		};
@@ -29,7 +29,7 @@
 		BB09C5DD2CE2102400E23E65 /* MediaPlayerIntegration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				59A8CAA22D5B3AF60090E955 /* Exceptions for "MediaPlayerIntegration" folder in "MediaPlayerIntegration" target */,
+				59CE188A2D8E61350059AA4C /* Exceptions for "MediaPlayerIntegration" folder in "MediaPlayerIntegration" target */,
 			);
 			path = MediaPlayerIntegration;
 			sourceTree = "<group>";
@@ -286,6 +286,7 @@
 				DEVELOPMENT_TEAM = Y26658RCL9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MediaPlayerIntegration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -320,6 +321,7 @@
 				DEVELOPMENT_TEAM = Y26658RCL9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MediaPlayerIntegration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -2,7 +2,6 @@ import SwiftUI
 import AVFoundation
 import MediaPlayer
 
-// ObservableObjectプロトコルを採用したクラスに変更
 class MusicPlayerViewModel: ObservableObject {
     @Published var currentTime: Double = 0
     @Published var totalTime: Double = 0

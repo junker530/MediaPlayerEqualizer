@@ -1,10 +1,3 @@
-//
-//  Glassmorphism Effect.swift
-//  Yoga App Template
-//
-//  Created by Damra on 22.07.2024.
-//
-
 import Foundation
 import SwiftUI
 
