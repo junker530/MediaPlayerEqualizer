@@ -78,10 +78,8 @@ class MusicPlayerViewModel: ObservableObject {
     
     func handlePlayPause() {
         if isPlaying {
-            audioPlayer?.pause()
             musicPlayManager.pause()
         } else {
-            audioPlayer?.play()
             try? musicPlayManager.play()
             startTimer()
         }
@@ -130,7 +128,6 @@ class MusicPlayerViewModel: ObservableObject {
     }
     
     private func playCurrentSong() {
-        audioPlayer?.play()
         try? musicPlayManager.play()
         isPlaying = true
         startTimer()
