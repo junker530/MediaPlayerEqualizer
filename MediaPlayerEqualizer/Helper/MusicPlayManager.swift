@@ -9,6 +9,10 @@ import SwiftUI
 import AVFoundation
 
 class MusicPlayManager: ObservableObject {
+    // プロパティ追加
+    private var seekOffsetTime: TimeInterval = 0
+    
+    
     enum PlayStatus {
         case prepared
         case stopped
@@ -39,7 +43,7 @@ class MusicPlayManager: ObservableObject {
         EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: -6.0)
     ]
     
-    private lazy var playerNode = AVAudioPlayerNode()
+    public private(set) lazy var playerNode = AVAudioPlayerNode()
     private lazy var engine = AVAudioEngine()
     private var eqNode: AVAudioUnitEQ
     
@@ -95,18 +99,24 @@ class MusicPlayManager: ObservableObject {
         }
     }
     
-    func prepare(_ item: MusicItem) throws {
-        guard let path = item.assetURL else {
-            return
-        }
+    // 再生準備（completionHandlerあり）
+    func prepare(_ item: MusicItem, onFinish: @escaping () -> Void) throws {
+        guard let path = item.assetURL else { return }
         let audioFile = try AVAudioFile(forReading: path)
         
-        self.engine.connect(self.playerNode, to: self.eqNode, format: audioFile.processingFormat)
-        self.engine.connect(self.eqNode, to: self.engine.mainMixerNode, format: audioFile.processingFormat)
+        engine.connect(playerNode, to: eqNode, format: audioFile.processingFormat)
+        engine.connect(eqNode, to: engine.mainMixerNode, format: audioFile.processingFormat)
         
-        self.playerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
-        self.playStatus = .prepared
+        playerNode.scheduleFile(audioFile, at: nil, completionHandler: onFinish)
+        
+        playStatus = .prepared
     }
+    
+    // 再生準備（completionHandlerなし）
+    func prepare(_ item: MusicItem) throws {
+        try prepare(item, onFinish: {})
+    }
+
     
     func play() throws {
         try AVAudioSession.sharedInstance().setActive(true, options: [])
@@ -125,5 +135,63 @@ class MusicPlayManager: ObservableObject {
         self.playerNode.pause()
         self.engine.pause()
         self.playStatus = .paused
+    }
+    
+    func seek(to time: TimeInterval, in item: MusicItem, onFinish: @escaping () -> Void) throws {
+        guard let path = item.assetURL else { return }
+        let audioFile = try AVAudioFile(forReading: path)
+        
+        engine.stop()
+        playerNode.stop()
+        
+        let sampleRate = audioFile.processingFormat.sampleRate
+        let startFrame = AVAudioFramePosition(time * sampleRate)
+        let frameCount = AVAudioFrameCount(audioFile.length - startFrame)
+        
+        engine.connect(playerNode, to: eqNode, format: audioFile.processingFormat)
+        engine.connect(eqNode, to: engine.mainMixerNode, format: audioFile.processingFormat)
+        
+        playerNode.scheduleSegment(audioFile, startingFrame: startFrame, frameCount: frameCount, at: nil, completionHandler: onFinish)
+        
+        seekOffsetTime = time
+        try engine.start()
+        playerNode.play()
+        playStatus = .playing
+    }
+    
+    func seek(to time: TimeInterval, in item: MusicItem) throws {
+        guard let path = item.assetURL else { return }
+        let audioFile = try AVAudioFile(forReading: path)
+        
+        engine.stop()
+        playerNode.stop()
+        
+        let sampleRate = audioFile.processingFormat.sampleRate
+        let startFrame = AVAudioFramePosition(time * sampleRate)
+        let frameCount = AVAudioFrameCount(audioFile.length - startFrame)
+        
+        engine.connect(playerNode, to: eqNode, format: audioFile.processingFormat)
+        engine.connect(eqNode, to: engine.mainMixerNode, format: audioFile.processingFormat)
+        
+        playerNode.scheduleSegment(audioFile, startingFrame: startFrame, frameCount: frameCount, at: nil)
+        
+        seekOffsetTime = time
+        try engine.start()
+        playerNode.play()
+        playStatus = .playing
+    }
+
+    // 再生時間取得
+    func getCurrentTime() -> TimeInterval {
+        if let nodeTime = playerNode.lastRenderTime,
+           let playerTime = playerNode.playerTime(forNodeTime: nodeTime) {
+            let elapsed = Double(playerTime.sampleTime) / playerTime.sampleRate
+            return seekOffsetTime + elapsed
+        }
+        return seekOffsetTime
+    }
+
+    func resetSeekOffset() {
+        self.seekOffsetTime = 0
     }
 }

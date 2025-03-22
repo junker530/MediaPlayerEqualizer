@@ -31,50 +31,62 @@ class MusicPlayerViewModel: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
     
-    func setupAudioPlayer() {
+    func setupAudioPlayer(useCompletionHandler: Bool = false) {
         handleStopAudio()
         
-        guard let currentSong = getCurrentSong() else {
-            print("Error: No song selected")
-            return
-        }
+        guard let currentSong = getCurrentSong() else { return }
         
         do {
-            // Set up audio player with AVAudioPlayer for time tracking
             if let assetURL = currentSong.assetURL {
                 audioPlayer = try AVAudioPlayer(contentsOf: assetURL)
                 audioPlayer?.delegate = delegate
                 audioPlayer?.prepareToPlay()
                 totalTime = audioPlayer?.duration ?? 0
                 currentTime = 0
-                
-                // Set up MusicPlayManager with equalizer
+            }
+            
+            musicPlayManager.resetSeekOffset()
+            
+            if useCompletionHandler {
+                try musicPlayManager.prepare(currentSong) { [weak self] in
+                    DispatchQueue.main.async {
+                        self?.handleNextSong()
+                    }
+                }
+            } else {
                 try musicPlayManager.prepare(currentSong)
             }
+            
             startTimer()
         } catch {
             print("Error loading audio file: \(error)")
         }
     }
+
+
     
     func startTimer() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            if let player = self.audioPlayer, !self.isSeeking {
-                self.currentTime = player.currentTime
-            }
+            guard !self.isSeeking else { return }
+            self.currentTime = self.musicPlayManager.getCurrentTime()
         }
     }
-    
+
+
     func seekAudio(to time: Double) {
-        audioPlayer?.currentTime = time
-        if isPlaying {
-            // Stop and restart with new position
-            musicPlayManager.stop()
-            try? musicPlayManager.play()
+        guard let song = getCurrentSong() else { return }
+        do {
+            try musicPlayManager.seek(to: time, in: song)
+            currentTime = time
+        } catch {
+            print("Seek failed: \(error)")
         }
     }
+
+
+
     
     func handlePlayPause() {
         if isPlaying {
@@ -104,8 +116,7 @@ class MusicPlayerViewModel: ObservableObject {
         guard !playlistManager.currentPlaylist.isEmpty else { return }
         currentSongIndex = (currentSongIndex + 1) % playlistManager.currentPlaylist.count
         handleStopAudio()
-        setupAudioPlayer()
-        playCurrentSong()
+        setupAudioPlayer(useCompletionHandler: false)
     }
     
     func handlePreviousSong() {
