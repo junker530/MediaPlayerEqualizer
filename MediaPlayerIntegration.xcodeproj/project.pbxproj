@@ -6,13 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		BB09C6232CE2122B00E23E65 /* Copyright Disclaimer.strings in Resources */ = {isa = PBXBuildFile; fileRef = BB09C6212CE2122B00E23E65 /* Copyright Disclaimer.strings */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		BB09C5DB2CE2102400E23E65 /* MediaPlayerIntegration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaPlayerIntegration.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB09C6222CE2122B00E23E65 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Copyright Disclaimer.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,7 +45,6 @@
 		BB09C5D22CE2102400E23E65 = {
 			isa = PBXGroup;
 			children = (
-				BB09C6212CE2122B00E23E65 /* Copyright Disclaimer.strings */,
 				BB09C5DD2CE2102400E23E65 /* MediaPlayerIntegration */,
 				BB09C5DC2CE2102400E23E65 /* Products */,
 			);
@@ -128,7 +122,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB09C6232CE2122B00E23E65 /* Copyright Disclaimer.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,17 +136,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		BB09C6212CE2122B00E23E65 /* Copyright Disclaimer.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				BB09C6222CE2122B00E23E65 /* en */,
-			);
-			name = "Copyright Disclaimer.strings";
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		BB09C5E72CE2102500E23E65 /* Debug */ = {
