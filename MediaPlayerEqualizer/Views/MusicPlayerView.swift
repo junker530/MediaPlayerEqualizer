@@ -71,9 +71,17 @@ class MusicPlayerViewModel: ObservableObject {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             guard !self.isSeeking else { return }
+            
             self.currentTime = self.musicPlayManager.getCurrentTime()
+            
+            // 再生が終了したら次の曲へ進む（1回だけ実行）
+            if self.currentTime >= self.totalTime, self.isPlaying {
+                self.isPlaying = false  // 二重呼び出し防止
+                self.handleNextSong()
+            }
         }
     }
+
 
 
     func seekAudio(to time: Double) {
