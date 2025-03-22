@@ -50,7 +50,13 @@ class MusicPlayManager: ObservableObject {
     private var routeChangeNotificationObserver: NSObjectProtocol?
     
     init() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback)
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default, options: [])
+            try session.setActive(true)
+        } catch {
+            print("Failed to configure AVAudioSession: \(error)")
+        }
         
         self.eqNode = AVAudioUnitEQ(numberOfBands: self.eqParameters.count)
         self.eqNode.bands.enumerated().forEach { index, param in
@@ -68,6 +74,7 @@ class MusicPlayManager: ObservableObject {
         
         self.registerRouteChangeObserver()
     }
+
     
     deinit {
         self.removeRouteChangeObserver()
