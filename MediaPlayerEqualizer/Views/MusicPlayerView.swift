@@ -13,6 +13,7 @@ class MusicPlayerViewModel: ObservableObject {
     private var timer: Timer?
     private var delegate: AudioPlayerDelegate?
     let playlistManager: MusicPlaylistManager
+    private let musicPlayManager = MusicPlayManager()
     
     init(playlistManager: MusicPlaylistManager) {
         self.playlistManager = playlistManager
@@ -33,18 +34,23 @@ class MusicPlayerViewModel: ObservableObject {
     func setupAudioPlayer() {
         handleStopAudio()
         
-        guard let currentSong = getCurrentSong(),
-              let assetURL = currentSong.assetURL else {
-            print("Error: Song file not found")
+        guard let currentSong = getCurrentSong() else {
+            print("Error: No song selected")
             return
         }
         
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: assetURL)
-            audioPlayer?.delegate = delegate
-            audioPlayer?.prepareToPlay()
-            totalTime = audioPlayer?.duration ?? 0
-            currentTime = 0
+            // Set up audio player with AVAudioPlayer for time tracking
+            if let assetURL = currentSong.assetURL {
+                audioPlayer = try AVAudioPlayer(contentsOf: assetURL)
+                audioPlayer?.delegate = delegate
+                audioPlayer?.prepareToPlay()
+                totalTime = audioPlayer?.duration ?? 0
+                currentTime = 0
+                
+                // Set up MusicPlayManager with equalizer
+                try musicPlayManager.prepare(currentSong)
+            }
             startTimer()
         } catch {
             print("Error loading audio file: \(error)")
@@ -64,15 +70,19 @@ class MusicPlayerViewModel: ObservableObject {
     func seekAudio(to time: Double) {
         audioPlayer?.currentTime = time
         if isPlaying {
-            audioPlayer?.play()
+            // Stop and restart with new position
+            musicPlayManager.stop()
+            try? musicPlayManager.play()
         }
     }
     
     func handlePlayPause() {
         if isPlaying {
             audioPlayer?.pause()
+            musicPlayManager.pause()
         } else {
             audioPlayer?.play()
+            try? musicPlayManager.play()
             startTimer()
         }
         isPlaying.toggle()
@@ -111,6 +121,7 @@ class MusicPlayerViewModel: ObservableObject {
     func handleStopAudio() {
         audioPlayer?.stop()
         audioPlayer = nil
+        musicPlayManager.stop()
         isPlaying = false
         currentTime = 0
         totalTime = 0
@@ -120,6 +131,7 @@ class MusicPlayerViewModel: ObservableObject {
     
     private func playCurrentSong() {
         audioPlayer?.play()
+        try? musicPlayManager.play()
         isPlaying = true
         startTimer()
     }
