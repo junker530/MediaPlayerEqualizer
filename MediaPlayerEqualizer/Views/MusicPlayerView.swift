@@ -183,6 +183,7 @@ struct MusicPlayerView: View {
     @StateObject private var playlistManager = MusicPlaylistManager()
     @StateObject private var viewModel: MusicPlayerViewModel
     @State private var showPlaylistPicker = false
+    @State private var showEqualizerView = false
     
     init() {
         let manager = MusicPlaylistManager()
@@ -300,13 +301,12 @@ struct MusicPlayerView: View {
                 .padding(.top, 30)
                 
                 HStack {
-                    Button(action: {}) {
+                    Button(action: { showEqualizerView = true}) {
                         Image(systemName: "slider.horizontal.3")
                             .font(.title2)
                             .foregroundColor(.white)
                             .imageScale(.large)
                     }
-                    .disabled(viewModel.getCurrentSong() == nil)
                     
                     Spacer()
                     
@@ -359,6 +359,16 @@ struct MusicPlayerView: View {
                 } else {
                     print("同じプレイリストが選択されました。再生を継続します。")
                 }
+            }
+        }
+        .sheet(isPresented: $showEqualizerView) {
+            if #available(iOS 16.0, *) {
+                EqualizerView(isPresented: $showEqualizerView)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+            } else {
+                EqualizerView(isPresented: $showEqualizerView)
+                // iOS 15など古いOSでは通常の全画面モーダル表示
             }
         }
         .onAppear {
