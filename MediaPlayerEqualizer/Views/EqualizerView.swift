@@ -11,7 +11,8 @@ import SwiftUI
 
 struct EqualizerView: View {
     @Binding var isPresented: Bool
-    @State private var bandValues: [Double] = [0, 0, 0, 0, 0] // 周波数帯ごとの値
+    @ObservedObject var manager: MusicPlayManager  // ← 追加！
+    @State private var bandValues: [Double] = [-6, -6, 0, 3, 3]  // 初期値は manager からも取得可
     @State private var clearBass: Double = 0 // Clear Bassの値
     let frequencies = ["400", "1k", "2.5k", "6.3k", "16k"] // 周波数ラベル
     
@@ -44,7 +45,9 @@ struct EqualizerView: View {
                             ForEach(0..<5) { i in
                                 VStack {
                                     VerticalSlider(value: $bandValues[i], height: geometry.size.height, loop: i)
-                                    
+                                        .onChange(of: bandValues[i]) { newValue in
+                                            manager.updateGain(band: i, value: newValue)
+                                        }
                                     Spacer().frame(height: 15)
                                     
                                     Text(frequencies[i])
@@ -162,7 +165,6 @@ struct HorizontalSlider: View {
     }
 }
 
-
 #Preview {
-    EqualizerView(isPresented: .constant(true))
+    EqualizerView(isPresented: .constant(true), manager: MusicPlayManager())
 }

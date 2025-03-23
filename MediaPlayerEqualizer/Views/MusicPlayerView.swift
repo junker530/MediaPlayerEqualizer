@@ -13,7 +13,7 @@ class MusicPlayerViewModel: ObservableObject {
     private var timer: Timer?
     private var delegate: AudioPlayerDelegate?
     let playlistManager: MusicPlaylistManager
-    private let musicPlayManager = MusicPlayManager()
+    let musicPlayManager = MusicPlayManager()
     
     init(playlistManager: MusicPlaylistManager) {
         self.playlistManager = playlistManager
@@ -362,15 +362,9 @@ struct MusicPlayerView: View {
             }
         }
         .sheet(isPresented: $showEqualizerView) {
-            if #available(iOS 16.0, *) {
-                EqualizerView(isPresented: $showEqualizerView)
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-            } else {
-                EqualizerView(isPresented: $showEqualizerView)
-                // iOS 15など古いOSでは通常の全画面モーダル表示
-            }
+            EqualizerView(isPresented: $showEqualizerView, manager: viewModel.musicPlayManager)
         }
+
         .onAppear {
             viewModel.setupAudioPlayer()
         }

@@ -43,11 +43,11 @@ class MusicPlayManager: ObservableObject {
 //        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: -6.0)
 //    ]
     private var eqParameters: [EQParameter] = [
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 400.0, gain: -6.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 1000.0, gain: -6.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 400.0, gain: 0.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 1000.0, gain: 0.0),
         EQParameter(type: .parametric, bandWidth: 1.0, frequency: 2500.0, gain: 0.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 6300.0, gain: 3.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: 3.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 6300.0, gain: 0.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: 0.0),
     ]
     
     public private(set) lazy var playerNode = AVAudioPlayerNode()
@@ -208,4 +208,11 @@ class MusicPlayManager: ObservableObject {
     func resetSeekOffset() {
         self.seekOffsetTime = 0
     }
+    
+    // イコライザーバンドのゲイン更新（リアルタイム反映）
+    func updateGain(band index: Int, value: Double) {
+        guard eqNode.bands.indices.contains(index) else { return }
+        eqNode.bands[index].gain = Float(value)
+    }
+
 }
