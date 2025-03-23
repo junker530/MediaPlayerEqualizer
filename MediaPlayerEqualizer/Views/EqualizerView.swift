@@ -12,7 +12,7 @@ import SwiftUI
 struct EqualizerView: View {
     @Binding var isPresented: Bool
     @ObservedObject var manager: MusicPlayManager  // ← 追加！
-    @State private var bandValues: [Double] = [-6, -6, 0, 3, 3]  // 初期値は manager からも取得可
+    @State private var bandValues: [Double] = [0,0,0,0,0]  // 初期値は manager からも取得可
     @State private var clearBass: Double = 0 // Clear Bassの値
     let frequencies = ["400", "1k", "2.5k", "6.3k", "16k"] // 周波数ラベル
     
