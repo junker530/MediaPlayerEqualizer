@@ -94,17 +94,17 @@ class MusicPlayerViewModel: ObservableObject {
         }
     }
 
-
-
-    
     func handlePlayPause() {
         if isPlaying {
             musicPlayManager.pause()
+            // 停止しないので currentTime は保持される
+            isPlaying = false
+            timer?.invalidate()  // タイマーだけ止める
         } else {
             try? musicPlayManager.play()
+            isPlaying = true
             startTimer()
         }
-        isPlaying.toggle()
     }
     
     func handleSkipForward() {

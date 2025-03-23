@@ -30,17 +30,24 @@ class MusicPlayManager: ObservableObject {
     @Published var playStatus: PlayStatus = .stopped
     
     //  10-Bands Parametric EQ
+//    private var eqParameters: [EQParameter] = [
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 32.0, gain: 3.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 64.0, gain: 3.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 128.0, gain: 3.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 256.0, gain: 2.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 500.0, gain: 0.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 1000.0, gain: -6.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 2000.0, gain: -6.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 4000.0, gain: -6.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 8000.0, gain: -6.0),
+//        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: -6.0)
+//    ]
     private var eqParameters: [EQParameter] = [
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 32.0, gain: 3.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 64.0, gain: 3.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 128.0, gain: 3.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 256.0, gain: 2.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 500.0, gain: 0.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 400.0, gain: -6.0),
         EQParameter(type: .parametric, bandWidth: 1.0, frequency: 1000.0, gain: -6.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 2000.0, gain: -6.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 4000.0, gain: -6.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 8000.0, gain: -6.0),
-        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: -6.0)
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 2500.0, gain: 0.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 6300.0, gain: 3.0),
+        EQParameter(type: .parametric, bandWidth: 1.0, frequency: 16000.0, gain: 3.0),
     ]
     
     public private(set) lazy var playerNode = AVAudioPlayerNode()
