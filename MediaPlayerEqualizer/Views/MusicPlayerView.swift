@@ -154,6 +154,8 @@ class MusicPlayerViewModel: ObservableObject {
         isPlaying = true
         startTimer()
     }
+    
+    
 }
 
 class AudioPlayerDelegate: NSObject, AVAudioPlayerDelegate {
@@ -299,7 +301,7 @@ struct MusicPlayerView: View {
                 
                 HStack {
                     Button(action: {}) {
-                        Image(systemName: "bookmark")
+                        Image(systemName: "slider.horizontal.3")
                             .font(.title2)
                             .foregroundColor(.white)
                             .imageScale(.large)
@@ -366,4 +368,8 @@ struct MusicPlayerView: View {
             viewModel.handleStopAudio()
         }
     }
+}
+
+#Preview {
+    MusicPlayerView()
 }
